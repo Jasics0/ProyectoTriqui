@@ -1,6 +1,37 @@
+import speech_recognition as sr
+
+r = sr.Recognizer()
 game_board = [["-", "-", "-"], ["-", "-", "-"], ["-", "-", "-"]]
 winner = ""
 
+
+
+def num(sound):
+    arr=["uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"];
+    try:
+        int(sound)
+        if int(sound)<=9 and int(sound)>=1:
+            return sound
+        else:
+            return "Diga un número entre el 1 y el 9"    
+    except ValueError:
+
+        for i in range(9):
+            if arr[i]==sound:
+                return (i+1)
+        return "No se encontró el numero"
+
+
+def hear():
+    with sr.Microphone() as source:
+        print('Diga el número de la casilla : ')
+        audio = r.listen(source)
+ 
+        try:
+            text = r.recognize_google(audio,language="es-MX")
+            return num(text)
+        except:
+            return "No se entendió el número"
 
 def show():
     for i in range(3):
@@ -92,23 +123,28 @@ def write(player):
     k = 0
     validate = False
     while(not validate):
-        a = int(input("Digite la casilla:"))
-        for i in range(3):
-            if(validate):
-                break
-            for j in range(3):
-                if(k == (a-1) and game_board[i][j] == "-"):
-                    validate = True
-                    if(player == 0):
-                        game_board[i][j] = "x"
-                    else:
-                        game_board[i][j] = "o"
+        num = hear()
+        try:
+            a = int(num)
+            for i in range(3):
+                if(validate):
                     break
-                k += 1
+                for j in range(3):
+                    if(k == (a-1) and game_board[i][j] == "-"):
+                        validate = True
+                        if(player == 0):
+                            game_board[i][j] = "x"
+                        else:
+                            game_board[i][j] = "o"
+                        break
+                    k += 1
 
-        if(not validate):
-            k = 0
-            print("Esa casilla ya está ocupada.\n")
+            if(not validate):
+                k = 0
+                print("Esa casilla ya está ocupada.\n")
+
+        except ValueError:
+            print(num)
 
 
 def play():
@@ -129,4 +165,4 @@ def play():
 if __name__ == '__main__':
     play()
     show()
-    print(winner+": el ganador es")
+    print("El ganador es: "+winner)
